@@ -1,0 +1,33 @@
+body {
+      background-color: #f8f9fa;
+      background-image: url(../assets/images/fondo.jpg);
+    }
+     .header {
+      text-align: center;
+      color: #007bff;
+      margin-top: 50px;
+    }
+    .login-container {
+      max-width: 400px;
+      margin: auto;
+      margin-top: 100px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fff;
+      background-image: url(../assets/images/fondo.jpg);
+    }
+    .login-title {
+      text-align: center;
+      color: #343a40;
+    }
+    .login-form {
+      margin-top: 20px;
+    }
+    .btn-login {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .btn-login:hover {
+      background-color: #0056b3;
+    }

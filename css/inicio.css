@@ -1,0 +1,38 @@
+.body {
+    background-image: url(../assets/images/fondo.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: wheat;
+    text-shadow: black 2px 2px;
+
+}
+.enlace {
+    box-shadow: rgba(0, 0, 0, 0.6) 2px 2px;
+    text-decoration: none;
+    color: black;
+    padding: 0.6rem;
+    border-radius: 4px;
+    background-color: white;
+    text-shadow: black 0px 0px;
+    transition: all 0.3s ease;
+}
+.enlace:hover {
+    background-color: skyblue;
+    color: white;
+        text-shadow: black 1px 1px;
+
+}
+.main {
+    background-color: rgba(0, 0, 0, 0.4);
+
+}
+.cartel {
+    width: 250px;
+    height: 250px;
+    border: 1px solid black;
+}
+.titulos {
+    color: white;
+}

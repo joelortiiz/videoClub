@@ -21,17 +21,21 @@
 .enlace:hover {
     background-color: skyblue;
     color: white;
-        text-shadow: black 1px 1px;
+    text-shadow: black 1px 1px;
 
 }
 .main {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: red !important;
 
 }
 .cartel {
     width: 250px;
     height: 250px;
     border: 1px solid black;
+}
+.actor {
+    width: 200px;
+    height: 200px;
 }
 .titulos {
     color: white;

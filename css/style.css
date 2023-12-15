@@ -1,6 +1,12 @@
-body {
-      background-color: #f8f9fa;
-      background-image: url(../assets/images/fondo.jpg);
+.body {
+    background-color: #f8f9fa;
+    background-image: url(./assets/images/fondo.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: wheat;
+    text-shadow: black 2px 2px;
     }
      .header {
       text-align: center;

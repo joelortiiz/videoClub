@@ -1,13 +1,12 @@
 <?php
 include "../lib/model/pelicula.php";
 include "../lib/model/actor.php";
-
-session_start();
+include "../functions/generartabla.php";
 
 $cadena_conexion = 'mysql:dbname=videoclub;host=127.0.0.1';
 $usuario = 'joel'; // Sustiteable por root
 $clave = 'joel'; // Si se utiliza root dejar la clave vacía
-
+$admin = false;
 try {
     // Aquí creamos conexión con la base de datos
     // Con el usuario joel
@@ -17,15 +16,21 @@ try {
 
         //PENDIENTE HACER FUNCIONES
         $cliente = $_POST["cliente"];
+        //Ciframos con metodología md5 la contraseña recibida
         $password = md5(htmlspecialchars($_POST["password"]));
 
         $sql_usu = "SELECT * FROM usuarios WHERE username = '" . $cliente . "' AND password = '" . $password . "'";
         $usuarioBD = $bd->query($sql_usu);
         // Si la consulta devuelve más de 0 filas cumple la condición.
         if ($usuarioBD->rowCount() > 0) {
+            session_start();
             foreach ($usuarioBD as $row => $value) {
-                // echo $value["username"];
+                // Prueba de funcionamiento de consulta:  echo $value["username"];
                 $_SESSION["username"] = $value["username"];
+                //Si el usuario tiene rol de administrador cambiamos el valor de la variable global a TRUE.
+                if( $value["rol"] == 1) {
+                    $admin = true;
+                }
             }
             $_SESSION["username"] = ucfirst($_SESSION["username"]);
             //Consulta para seleccionar todos los datos de TODAS las películas
@@ -72,6 +77,21 @@ try {
             </header>
             <!-- End Header -->
             <main class="main p-2">
+                <?php 
+                
+                if($admin == false) {
+                    ?>
+                <div class="d-flex justify-content-end flex-column align-items-end">
+                    <h2>
+                        Necesitas ayuda?
+                    </h2>
+                    <p>
+                        Contacta con nuestro equipo de soporte pulsando <a href="./contacto.php">aquí</a> 
+                    </p>
+                </div>
+                <?php
+                }
+                ?>
                 <h2>
                     Películas disponibles
                 </h2>
@@ -131,20 +151,23 @@ try {
 
                             </div>
                             <?php
-                                    foreach ($usuarioBD as $usuariww) {
-                                          echo 'rol 0aaaaaaaaaaaaaa' .$usuariww["rol"];
-
-                                          if($usuariww["rol"]==0) {
-                                              echo 'rol 0aaaaaaaaaaaaaa' .$usuariww["rol"];
-                                          } else if ($value["rol"]==1) {
-                                              echo 'rol 1';
+                                      if ($admin == true) {
+                                          ?>
+                                             <div class="mt-2 text-center"> 
+                                                    <a href="../functions/delete.php?" class="btn btn-danger">Eliminar</a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                             <div class="mt-2 text-center"> 
+                                                    <a href="../pages/update.php" class="btn btn-warning">Actualizar</a>
+                                             </div>
+                                            <?php
                                           }
-                                    }
                           
                             
                             ?>
                             <div class="text-light">
-                                <h2 class="text-center text-light">
+                                <h2 class="text-center text-light mb-2">
                                     Reparto
                                 </h2>
                                 <?php
@@ -166,7 +189,7 @@ try {
                                     <?php
                                     foreach ($actoresArr as $actor) {
                                         echo "<div class='text-light'>"
-                                        . "<div>" . $actor->getNombre() . " " . $actor->getApellidos() . "</div>"
+                                        . "<div class='text-center'>" . $actor->getNombre() . " " . $actor->getApellidos() . "</div>"
                                         . "<div> <img width='200px' height='250px' class='m-2 rounded' src='../assets/images/" . $actor->getFotografia() . "'></div>" .
                                         "</div>";
                                     }
@@ -190,8 +213,7 @@ try {
     <?php
     //  Cerramos conexión
     $bd = null;
-    echo 'funciona';
 } catch (Exception $e) {
-    echo "Error en la base de datos: " . $e->getMessage();
+    echo "Base de datos en mantenimiento: " . $e->getMessage();
 }
 ?>

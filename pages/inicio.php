@@ -1,69 +1,53 @@
 <?php
 include "../lib/model/pelicula.php";
 include "../lib/model/actor.php";
-include "../functions/generartabla.php";
+include_once "../functions/functions.php";
 
-$cadena_conexion = 'mysql:dbname=videoclub;host=127.0.0.1';
-$usuario = 'joel'; // Sustiteable por root
-$clave = 'joel'; // Si se utiliza root dejar la clave vacía
-$admin = false;
 try {
     // Aquí creamos conexión con la base de datos
+    $bd = conexion();
     // Con el usuario joel
-    $bd = new PDO($cadena_conexion, $usuario, $clave);
-
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-        //PENDIENTE HACER FUNCIONES
-        $cliente = $_POST["cliente"];
-        //Ciframos con metodología md5 la contraseña recibida
-        $password = md5(htmlspecialchars($_POST["password"]));
-
-        $sql_usu = "SELECT * FROM usuarios WHERE username = '" . $cliente . "' AND password = '" . $password . "'";
-        $usuarioBD = $bd->query($sql_usu);
-        // Si la consulta devuelve más de 0 filas cumple la condición.
-        if ($usuarioBD->rowCount() > 0) {
-            session_start();
-            foreach ($usuarioBD as $row => $value) {
-                // Prueba de funcionamiento de consulta:  echo $value["username"];
-                $_SESSION["username"] = $value["username"];
-                //Si el usuario tiene rol de administrador cambiamos el valor de la variable global a TRUE.
-                if( $value["rol"] == 1) {
-                    $admin = true;
-                }
-            }
-            $_SESSION["username"] = ucfirst($_SESSION["username"]);
-            //Consulta para seleccionar todos los datos de TODAS las películas
-            $sql_pelis = "SELECT * FROM peliculas";
-            $pelis = $bd->query($sql_pelis);
-            $pelisArr = [];
+   
+    $user;
+    $password;
+    
+  // if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+        if($_POST["cliente"] != "" && $_POST["password"] != ""){
+             $password = $_POST["password"] ;
+             $user = $_POST["cliente"] ;
+             consultaInicial($bd, $_POST["cliente"], $_POST["password"]);
+              $admin = esAdmin($bd, $_POST["cliente"], $_POST["password"]);
+            $pelisArr = cargaPelis($bd);
+            //Variable auxiliar de actores.
             $actoresArrAlm = [];
-
-            foreach ($pelis as $peli => $value) {
-                // Pelicula($id, $titulo, $genero, $pais, $anyo, $cartel);
-                $pelicula = new Pelicula($value["id"], $value["titulo"], $value["genero"], $value["pais"], $value["anyo"], $value["cartel"]);
-                array_push($pelisArr, $pelicula);
-                //Prueba de funcionamiento:
-                //  echo $pelicula->getTitulo();
-            }
-        } else {
-            header("Location: ../index.php?error");
         }
-    } else {
-        header("Location: ../index.php?error");
-    }
+  // }  
+   else {
+       echo $user;
+              echo $password;
+
+       $_SESSION["username"] = $user;
+       $_SESSION["password"] = $password;
+       
+           // if (isset($_SESSION["username"])){
+               
+          //  }
+        }
+   
     ?>
     <!doctype html>
     <html lang="es">
         <head>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <link rel="stylesheet" href="../css/inicio.css" />
+
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
-            <link rel="stylesheet" href="../css/inicio.css" />
             <title>VideoClub JoelOrtiz</title>
         </head>
-        <body class="body p-4 text-light">
+        <body class="body text-light">
             <!-- Start Header -->
             <header class="d-flex flex-column justify-content-center align-items-center">
                 <!-- Pendiente añadir cookie de ultima sesion -->
@@ -72,26 +56,24 @@ try {
                     <?php echo $_SESSION["username"]; ?> 
                 </h1>
                 <div>
+                    <p class="bg-light p-2 text-primary rounded shadow-none">
+                        <?php 
+                        if(isset($_COOKIE["conexion"])) {
+                           echo "Última Conexión: " .$_COOKIE["conexion"]; 
+                           $fecha_actual = date("d/m H:i");
+                           setcookie("conexion", $fecha_actual, time() + 3600 * 24, "/");
+
+                        } else {
+                            echo 'Ahora mismo.';
+                        }
+                        ?>
+                    </p>
                     <a href="../index.php?endsession" class="enlace">Cerrar Sesión</a>
                 </div>
             </header>
             <!-- End Header -->
-            <main class="main p-2">
-                <?php 
-                
-                if($admin == false) {
-                    ?>
-                <div class="d-flex justify-content-end flex-column align-items-end">
-                    <h2>
-                        Necesitas ayuda?
-                    </h2>
-                    <p>
-                        Contacta con nuestro equipo de soporte pulsando <a href="./contacto.php">aquí</a> 
-                    </p>
-                </div>
-                <?php
-                }
-                ?>
+            <main class="main m-4 p-4">
+
                 <h2>
                     Películas disponibles
                 </h2>
@@ -151,55 +133,31 @@ try {
 
                             </div>
                             <?php
-                                      if ($admin == true) {
-                                          ?>
-                                             <div class="mt-2 text-center"> 
-                                                    <a href="../functions/delete.php?" class="btn btn-danger">Eliminar</a>
-                                            </div>
-                                        </td>
-                                        <td>
-                                             <div class="mt-2 text-center"> 
-                                                    <a href="../pages/update.php" class="btn btn-warning">Actualizar</a>
-                                             </div>
-                                            <?php
-                                          }
-                          
-                            
-                            ?>
-                            <div class="text-light">
-                                <h2 class="text-center text-light mb-2">
-                                    Reparto
-                                </h2>
-                                <?php
-                                $sql_actores = "SELECT * FROM actores WHERE id IN (SELECT idActor FROM actuan WHERE actuan.idPelicula = " . $peli->getId() . ");";
-                                $actores = $bd->query($sql_actores);
-                                $actoresArr = [];
-                                foreach ($actores as $key => $value) {
-                                    // print_r($value["id"] ." ");
-                                    // Pelicula($id, $titulo, $genero, $pais, $anyo, $cartel);
-                                    $value = new Actor($value["id"], $value["nombre"], $value["apellidos"], $value["fotografia"]);
-                                    array_push($actoresArr, $value);
-                                    array_push($actoresArrAlm, $value);
-
-                                    //Prueba de funcionamiento:
+                            if ($admin == true) {
+                                ?>
+                                <div class="mt-2 text-center"> 
+                                    <a href="../functions/delete.php?" class="btn btn-danger">Eliminar</a>
+                                </div>
+                                </td>
+                                <td>
+                                    <div class="mt-2 text-center"> 
+                                        <a href="../pages/update.php" class="btn text-light btn-warning">Actualizar</a>
+                                    </div>
+                                    <?php
                                 }
                                 ?>
-                                <div class="d-flex justify-content-around">
-
+                                <div class="text-light">
+                                    <h2 class="text-center text-light mb-2">
+                                        Reparto
+                                    </h2>
                                     <?php
-                                    foreach ($actoresArr as $actor) {
-                                        echo "<div class='text-light'>"
-                                        . "<div class='text-center'>" . $actor->getNombre() . " " . $actor->getApellidos() . "</div>"
-                                        . "<div> <img width='200px' height='250px' class='m-2 rounded' src='../assets/images/" . $actor->getFotografia() . "'></div>" .
-                                        "</div>";
-                                    }
+                                    $id = $peli->getId();
+                                    cargaActor($bd, $actoresArrAlm, $id);
                                     ?>
+                                </div>
+                                <div>
 
                                 </div>
-                            </div>
-                            <div>
-
-                            </div>
                         </div>
                         <?php
                     }
@@ -207,6 +165,80 @@ try {
 
                 </section>
             </main>
+            <footer>
+                <?php
+                if ($admin == false) {
+                    ?>
+                    <div class="d-flex bg-secondary col-md-12 p-4 justify-content-center flex-column align-items-center">
+                        <h2>
+                            <span class="text-primary"> <?php echo $_SESSION["username"]; ?> </span>  , ¿Necesitas ayuda?
+                        </h2>
+                        <p>
+                            Contacta con nuestro equipo de soporte rellenando el siguiente formulario
+                        </p>
+                        
+                        <form class="form" method="POST" action="./contacto.php">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="name" >
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="correo" name="mail" >
+                            </div>
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Número de Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" >
+                            </div>
+                            <div class="mb-3">
+                             <label for="mensaje" class="form-label">Mensaje</label>
+                             <textarea class="form-control" cols="50" name="text" rows="5" ></textarea>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="noRobot" name="noRobot" required>
+                                <label class="form-check-label" for="noRobot">No soy un robot</label>
+                            </div>
+                            
+                            <button type="submit" name="contact" class="btn btn-primary">Enviar</button>
+                        </form>
+                    </div>
+                    <?php
+                } elseif ($admin == true) {
+                ?>
+                 <div class="d-flex text-center bg-success col-md-12 p-4 justify-content-center flex-column align-items-center">
+                     <h2 class="mb-4">
+                            <span class="text-warning"> Añadir película </span>
+                        </h2>
+                     <?php if(isset($_GET["errorAniadir"])) echo '<p class="text-warning> Faltan datos por introducir !!"'; ?>
+                     <form class="form" method="POST" action="./aniadir.php">
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" class="form-control" name="titulo" >
+                            </div>
+                            <div class="mb-3">
+                                <label  class="form-label">Género</label>
+                                <input type="text" class="form-control" name="genero" >
+                            </div>
+                            <div class="mb-3">
+                                <label  class="form-label">País</label>
+                                <input type="tel" class="form-control"  name="pais" >
+                            </div>
+                            <div class="mb-3">
+                             <label class="form-label">Año</label>
+                             <input type="number" class="form-control" name="anio" >
+                            </div>
+                             <div class="mb-3">
+                             <label class="form-label">Cartel</label>
+                             <input type="text" placeholder="imagen.jpg" value="" class="form-control" name="cartel" >
+                            </div>
+                            <button type="submit" name="aniadirpeli" class="btn btn-primary">Confirmar</button>
+                        </form>
+                    </div>
+                
+                <?php
+            }
+                ?>
+            </footer>
         </body>
     </html>
 

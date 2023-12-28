@@ -4,10 +4,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Iniciar Sesión</title>
+        <link rel="stylesheet" href="./css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="./css/style.css"/>
+        
     </head>
-    <body class="body">
+    <body>
         <header>
             <h1 class="header">Bienvenido a VideoClub Joel</h1>
         </header>
@@ -18,6 +19,8 @@
                 //para ver los errores de inicio de sesión
                 if (isset($_GET['error'])) {
                     echo '<p class="text-danger"> Datos incorrectos </p>';
+                } elseif(isset($_GET['errorsesion'])) {
+                    echo '<p class="text-danger"> Debes iniciar sesión para acceder.</p>';
                 }
                 ?>  
                 <form class="login-form" method="POST" action="./pages/inicio.php">

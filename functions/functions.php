@@ -96,16 +96,24 @@ function cargaActor($bd, $actoresArrAlm, $id) {
     foreach ($actoresArr as $actor) {
         echo "<div class='text-light'>"
         . "<div class='text-center'>" . $actor->getNombre() . " " . $actor->getApellidos() . "</div>"
-        . "<div class=''> <img width='200px' height='250px' class='m-2 rounded' src='../assets/images/" . $actor->getFotografia() . "'></div>" .
+        . "<div class=''> <img width='200' height='250' class='m-2 rounded' alt='ACTOR/ACTRIZ' src='../assets/images/" . $actor->getFotografia() . "'></div>" .
         "</div>";
     }
     echo '</div>';
 }
 
 function actualizarPeli($bd, $tituloA, $generoA, $paisA, $anioA, $cartelA, $idA) {
-
+    //Sentencia SQL para actualizar datos de la BBDD
     $sql_actualizar = "UPDATE peliculas SET titulo = '$tituloA', genero = '$generoA', pais = '$paisA', anyo = '$anioA', cartel = '$cartelA' WHERE id = '$idA'";
     $BDActualizar = $bd->prepare($sql_actualizar);
     $BDActualizar->execute();
     header("Location: ../pages/inicio.php?success");
+}
+function  eliminarPeli($idD, $bd) {
+        //Sentencia SQL para eliminar datos específicos de la BBDD
+
+    $sql_eliminar = "DELETE FROM peliculas WHERE id = '$idD'";
+    $BDDelete = $bd->prepare($sql_eliminar);
+    $BDDelete->execute();
+    header("Location: ../pages/inicio.php?successDel");
 }

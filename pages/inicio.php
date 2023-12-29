@@ -37,11 +37,11 @@ try {
     <!doctype html>
     <html lang="es">
         <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <link rel="stylesheet" href="../css/inicio.css" />
+            <meta charset="UTF-8" >
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+            <link rel="stylesheet" href="../css/inicio.css" >
 
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" >
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
             <title>VideoClub JoelOrtiz</title>
         </head>
@@ -80,7 +80,7 @@ try {
                             ?>
                             <a href="./inicio.php" class="btn text-light fs-2 btn-danger">Cancelar</a>
 
-                            <?php }
+                        <?php }
                         ?>
                     </p>
                 </div>
@@ -91,6 +91,8 @@ try {
                             echo "<p class='text-success fs-3'> Modificación exitosa !! </p>;";
                         } elseif (isset($_GET["errorActualizar"])) {
                             echo "<p class='text-warning fs-3'> Faltan datos de película !! </p>;";
+                        } elseif (isset($_GET["successDel"])) {
+                            echo "<p class='text-success fs-3'> Eliminación exitosa !! </p>;";
                         }
                     }
                     ?>
@@ -101,6 +103,7 @@ try {
                     <?php
                     foreach ($pelisArr as $peli) {
                         ?>
+                        <!-- MOSTRAR TODAS LAS PELICULAS -->
                         <div class="d-flex flex-column justify-content-center align-items-center col-md-10 ">
 
                             <div>
@@ -112,7 +115,7 @@ try {
                             </div>
                             <div class="d-flex align-items-center ">
                                 <div class="p-2 m-2">
-                                    <img class="cartel" src="../assets/images/<?php echo $peli->getCartel() ?>" alt="alt"/>
+                                    <img class="cartel" src="../assets/images/<?php echo $peli->getCartel() ?>" alt="alt" >
                                 </div>
                                 <div>
                                     <table class="table text-light">
@@ -156,59 +159,75 @@ try {
                             if ($admin == true) {
                                 ?>
                                 <div class="mt-2 text-center"> 
-                                    <a href="../functions/delete.php?" class="btn btn-danger">Eliminar</a>
-                                </div>
-                                </td>
-                                <td>
-                                    <div class="mt-2 text-center"> 
-
-                                        <?php
-                                        if (isset($_GET["actualizar"])) {
-                                            ?>
-                                            <form class="form mt-4" action="./actualizar.php" method="POST">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Título</label>
-                                                    <input type="text" class="form-control" name="titulo" value="<?php echo $peli->getTitulo(); ?>" >
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label  class="form-label">Género</label>
-                                                    <input type="text" class="form-control" name="genero" value="<?php echo $peli->getGenero(); ?>" >
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label  class="form-label">País</label>
-                                                    <input type="tel" class="form-control"  name="pais" value="<?php echo $peli->getPais(); ?>" >
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Año</label>
-                                                    <input type="number" class="form-control" name="anio" value="<?php echo $peli->getAnyo(); ?>" >
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Cartel</label>
-                                                    <input type="text" placeholder="imagen.jpg" class="form-control" name="cartel" value="<?php echo $peli->getCartel(); ?>" >
-                                                    <input type="text" hidden=""  class="form-control" name="id" value="<?php echo $peli->getId(); ?>" >
-
-                                                </div>
-                                                <button type="submit" name="aniadirpeli" class="btn btn-primary">Confirmar</button>
-                                            </form>
-                                            <?php
-                                        }
+                                    <?php
+                                    if (isset($_GET["confirmarDel"])) {
                                         ?>
-                                    </div>
-                                    <?php
-                                }
-                                ?>
-                                <div class="text-light">
-                                    <h2 class="text-center text-light mb-2">
-                                        Reparto
-                                    </h2>
-                                    <?php
-                                    $id = $peli->getId();
-                                    cargaActor($bd, $actoresArrAlm, $id);
+                                        <div>
+                                            <p>
+                                                ¿Estas seguro de que quieres eliminar esta pelicula?
+                                            </p>
+                                            <a href="./eliminar.php?id=<?php echo $peli->getId(); ?>" class="btn btn-danger">Confirmar</a>
+
+                                        </div>
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <a href="./inicio.php?confirmarDel" class="btn btn-danger">Eliminar</a>
+                                        <?php
+                                    }
                                     ?>
                                 </div>
-                                <div>
 
+                                <div class="mt-2 text-center"> 
+
+                                    <?php
+                                    if (isset($_GET["actualizar"])) {
+                                        ?>
+                                        <!-- FORMULARIO ACTUALIZAR -->
+                                        <form class="form mt-4" action="./actualizar.php" method="POST">
+                                            <div class="mb-3">
+                                                <label class="form-label">Título</label>
+                                                <input type="text" class="form-control" name="titulo" value="<?php echo $peli->getTitulo(); ?>" >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label  class="form-label">Género</label>
+                                                <input type="text" class="form-control" name="genero" value="<?php echo $peli->getGenero(); ?>" >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label  class="form-label">País</label>
+                                                <input type="tel" class="form-control"  name="pais" value="<?php echo $peli->getPais(); ?>" >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Año</label>
+                                                <input type="number" class="form-control" name="anio" value="<?php echo $peli->getAnyo(); ?>" >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Cartel</label>
+                                                <input type="text" placeholder="imagen.jpg" class="form-control" name="cartel" value="<?php echo $peli->getCartel(); ?>" >
+                                                <input type="text" hidden=""  class="form-control" name="id" value="<?php echo $peli->getId(); ?>" >
+
+                                            </div>
+                                            <button type="submit" name="aniadirpeli" class="btn btn-primary">Confirmar</button>
+                                        </form>
+                                        <?php
+                                    }
+                                    ?>
                                 </div>
+                                <?php
+                            }
+                            ?>
+                            <div class="text-light">
+                                <h2 class="text-center text-light mb-2">
+                                    Reparto
+                                </h2>
+                                <?php
+                                $id = $peli->getId();
+                                cargaActor($bd, $actoresArrAlm, $id);
+                                ?>
+                            </div>
+                            <div>
+
+                            </div>
                         </div>
                         <?php
                     }
@@ -227,7 +246,7 @@ try {
                         <p>
                             Contacta con nuestro equipo de soporte rellenando el siguiente formulario
                         </p>
-
+                        <!-- FORMULARIO CONTACTO CON ADMIN -->
                         <form class="form" method="POST" action="./contacto.php">
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre</label>
@@ -265,6 +284,7 @@ try {
                             echo '<p class="text-danger fs-3"> Faltan datos por introducir !! </p>';
                         }
                         ?>
+                        <!-- FORMULARIO AÑADIR PELICULA -->
                         <form class="form" method="POST" action="./aniadir.php">
                             <div class="mb-3">
                                 <label class="form-label">Título</label>

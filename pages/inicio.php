@@ -1,7 +1,7 @@
 <?php
 include "../lib/model/pelicula.php";
 include "../lib/model/actor.php";
-include_once "../functions/functions.php";
+include_once "../lib/functions/functions.php";
 session_start();
 
 try {
@@ -45,7 +45,7 @@ try {
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
             <title>VideoClub JoelOrtiz</title>
         </head>
-        <body class="body text-light">
+        <body>
             <!-- Start Header -->
             <header class="d-flex flex-column justify-content-center align-items-center">
                 <!-- Pendiente añadir cookie de ultima sesion -->
@@ -71,16 +71,19 @@ try {
             <!-- End Header -->
             <main class="main m-4 p-4">
                 <div class="d-flex justify-content-around">
-                    <h2>
+                    <h2 class="text-light">
                         Películas disponibles
                     </h2>
                     <p>
-                        <a href="./inicio.php?actualizar" class="btn text-light fs-2 btn-warning">Actualizar</a>
-                        <?php if (isset($_GET["actualizar"])) {
+                        <?php if ($admin == true) {
                             ?>
-                            <a href="./inicio.php" class="btn text-light fs-2 btn-danger">Cancelar</a>
-
-                        <?php }
+                            <a href="./inicio.php?actualizar" class="btn text-light fs-2 btn-warning">Actualizar</a>
+                            <?php if (isset($_GET["actualizar"])) {
+                                ?>
+                                <a href="./inicio.php" class="btn text-light fs-2 btn-danger">Cancelar</a>
+                                <?php
+                            }
+                        }
                         ?>
                     </p>
                 </div>
@@ -97,15 +100,12 @@ try {
                     }
                     ?>
                 </div>
-
                 <section class="d-flex flex-column  justify-content-center align-items-center col-md-12">
-
                     <?php
                     foreach ($pelisArr as $peli) {
                         ?>
                         <!-- MOSTRAR TODAS LAS PELICULAS -->
                         <div class="d-flex flex-column justify-content-center align-items-center col-md-10 ">
-
                             <div>
                                 <p class="titulos fs-3">
                                     <?php
@@ -153,7 +153,6 @@ try {
                                         </tbody>
                                     </table>
                                 </div>
-
                             </div>
                             <?php
                             if ($admin == true) {
@@ -205,7 +204,6 @@ try {
                                                 <label class="form-label">Cartel</label>
                                                 <input type="text" placeholder="imagen.jpg" class="form-control" name="cartel" value="<?php echo $peli->getCartel(); ?>" >
                                                 <input type="text" hidden=""  class="form-control" name="id" value="<?php echo $peli->getId(); ?>" >
-
                                             </div>
                                             <button type="submit" name="aniadirpeli" class="btn btn-primary">Confirmar</button>
                                         </form>
@@ -216,7 +214,7 @@ try {
                                 <?php
                             }
                             ?>
-                            <div class="text-light">
+                            <div class="text-light m-4">
                                 <h2 class="text-center text-light mb-2">
                                     Reparto
                                 </h2>
@@ -225,27 +223,21 @@ try {
                                 cargaActor($bd, $actoresArrAlm, $id);
                                 ?>
                             </div>
-                            <div>
-
-                            </div>
                         </div>
                         <?php
                     }
                     ?>
-
                 </section>
             </main>
             <footer>
                 <?php
                 if ($admin == false) {
                     ?>
-                    <div class="d-flex bg-secondary col-md-12 p-4 justify-content-center flex-column align-items-center">
+                    <div class="d-flex bg-secondary text-light col-md-12 p-4 justify-content-center flex-column align-items-center">
                         <h2>
                             <span class="text-primary"> <?php echo $_SESSION["username"]; ?> </span>  , ¿Necesitas ayuda?
                         </h2>
-                        <p>
-                            Contacta con nuestro equipo de soporte rellenando el siguiente formulario
-                        </p>
+                        <p> Contacta con nuestro equipo de soporte rellenando el siguiente formulario </p>
                         <!-- FORMULARIO CONTACTO CON ADMIN -->
                         <form class="form" method="POST" action="./contacto.php">
                             <div class="mb-3">
@@ -268,7 +260,6 @@ try {
                                 <input type="checkbox" class="form-check-input" id="noRobot" name="noRobot" required>
                                 <label class="form-check-label" for="noRobot">No soy un robot</label>
                             </div>
-
                             <button type="submit" name="contact" class="btn btn-primary">Enviar</button>
                         </form>
                     </div>
@@ -285,7 +276,7 @@ try {
                         }
                         ?>
                         <!-- FORMULARIO AÑADIR PELICULA -->
-                        <form class="form" method="POST" action="./aniadir.php">
+                        <form class="form text-light" method="POST" action="./aniadir.php">
                             <div class="mb-3">
                                 <label class="form-label">Título</label>
                                 <input type="text" class="form-control" name="titulo" >
@@ -309,16 +300,14 @@ try {
                             <button type="submit" name="aniadirpeli" class="btn btn-primary">Confirmar</button>
                         </form>
                     </div>
-
                     <?php
                 }
                 ?>
             </footer>
         </body>
     </html>
-
     <?php
-    //  Cerramos conexión
+    //  Cerramos conexión a la base de datos.
     $bd = null;
 } catch (Exception $e) {
     echo "Base de datos en mantenimiento: " . $e->getMessage();

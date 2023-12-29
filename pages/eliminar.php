@@ -7,7 +7,7 @@ if (!$_SESSION["nombre"]) {
 
 try {
     //incluimos archivo funciones
-    include '../functions/functions.php';
+    include '../lib/functions/functions.php';
     //intentamos conexion con base de datos para guardarla en una variable. En caso de no ser correcta redirigimos.
     $bdD = conexion();
     //Id de la pelicula a eliminar

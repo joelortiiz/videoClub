@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $cartelA = $_POST["cartel"];
         $idA = $_POST["id"];
         try {
-            include '../functions/functions.php';
+            include '../lib/functions/functions.php';
 
             $bdA = conexion();
             actualizarPeli($bdA, $tituloA, $generoA, $paisA, $anioA, $cartelA, $idA);

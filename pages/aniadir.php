@@ -7,7 +7,7 @@ if (!$_SESSION["nombre"]) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include_once '../functions/functions.php';
+    include_once '../lib/functions/functions.php';
     
     if($_POST["titulo"] !="" && $_POST["genero"] !="" && $_POST["pais"] !="" && $_POST["anio"] !="" && $_POST["cartel"]) {
     $titulo = $_POST["titulo"];

@@ -34,7 +34,7 @@ if (isset($_POST["contact"])) {
     $mail->addAddress($_POST["mail"]);
     $mail->isHTML(true);
     //Asunto del correo electrónico.
-    $mail->Subject = "INCIDENCIA VIDEOCLUB" . strtoupper($_POST["name"]);
+    $mail->Subject = "INCIDENCIA VIDEOCLUB " . strtoupper($_POST["name"]);
     $mail->Body = $_POST["text"];
     $mail->send();
     header("Location: ./inicio.php?contacto=true");

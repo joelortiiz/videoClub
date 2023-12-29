@@ -22,6 +22,9 @@
                 } elseif(isset($_GET['errorsesion'])) {
                     echo '<p class="text-danger"> Debes iniciar sesión para acceder.</p>';
                 }
+                if(isset($_GET["logout"])) {
+                    session_destroy();
+                }
                 ?>  
                 <form class="login-form" method="POST" action="./pages/inicio.php">
                     <div class="mb-3">

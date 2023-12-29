@@ -14,7 +14,7 @@ function conexion() {
 }
 
 function consultaInicial($bd, $cliente, $password) {
-
+    $_SESSION["password"] = $password;
     //Ciframos con metodología md5 la contraseña recibida
     $password = md5(htmlspecialchars($password));
 
@@ -22,22 +22,21 @@ function consultaInicial($bd, $cliente, $password) {
     $usuarioBD = $bd->query($sql_usu);
     // Si la consulta devuelve más de 0 filas cumple la condición.
     if ($usuarioBD->rowCount() > 0) {
-        session_start();
         // Si no existe la cookie, una vez hemos iniciado sesión guardamos la hora de conexión
         if (!isset($_COOKIE["conexion"])) {
             $fecha_actual = date("d/m H:i");
             setcookie("conexion", $fecha_actual, time() + 3600 * 24, "/");
         }
         foreach ($usuarioBD as $row => $value) {
-            
+
             // Prueba de funcionamiento de consulta:  echo $value["username"];
             $_SESSION["username"] = $value["username"];
-            $_SESSION["username"] = ucfirst($_SESSION["username"]);
-            
+            // $_SESSION["username"] = ucfirst($_SESSION["username"]);
+
+
 
             $_SESSION["rol"] = $value["rol"];
             // echo $_SESSION["rol"];
-           
         }
     } else {
         header("Location: ../index.php?error");
@@ -49,8 +48,8 @@ function esAdmin($bd, $cliente, $password) {
     $password = md5(htmlspecialchars($password));
     $sql_usu = "SELECT rol FROM usuarios WHERE username = '" . $cliente . "' AND password = '" . $password . "'";
     $usuarioBD = $bd->query($sql_usu);
-    
- //Si el usuario tiene rol de administrador cambiamos el valor de la variable a TRUE.
+
+    //Si el usuario tiene rol de administrador cambiamos el valor de la variable a TRUE.
     foreach ($usuarioBD as $row => $value) {
         if ($value["rol"] == 1) {
             return $admin = true;
@@ -103,4 +102,10 @@ function cargaActor($bd, $actoresArrAlm, $id) {
     echo '</div>';
 }
 
-;
+function actualizarPeli($bd, $tituloA, $generoA, $paisA, $anioA, $cartelA, $idA) {
+
+    $sql_actualizar = "UPDATE peliculas SET titulo = '$tituloA', genero = '$generoA', pais = '$paisA', anyo = '$anioA', cartel = '$cartelA' WHERE id = '$idA'";
+    $BDActualizar = $bd->prepare($sql_actualizar);
+    $BDActualizar->execute();
+    header("Location: ../pages/inicio.php?success");
+}
